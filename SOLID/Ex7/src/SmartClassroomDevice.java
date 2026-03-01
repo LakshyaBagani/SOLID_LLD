@@ -1,5 +1,5 @@
+// Smell: original fat interface.
 public interface SmartClassroomDevice {
-    // Fat interface (ISP violation)
     void powerOn();
     void powerOff();
     void setBrightness(int pct);

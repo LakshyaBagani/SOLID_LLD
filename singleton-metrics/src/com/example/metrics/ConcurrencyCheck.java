@@ -1,0 +1,41 @@
+package com.example.metrics;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+public class ConcurrencyCheck {
+
+    public static void main(String[] args) throws Exception {
+        int threads = 80;
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+        CountDownLatch ready = new CountDownLatch(threads);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(threads);
+
+        Set<Integer> identities = ConcurrentHashMap.newKeySet();
+
+        for (int i = 0; i < threads; i++) {
+            pool.submit(() -> {
+                ready.countDown();
+                try {
+                    start.await();
+                    MetricsRegistry r = MetricsRegistry.getInstance();
+                    identities.add(System.identityHashCode(r));
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+
+        ready.await(2, TimeUnit.SECONDS);
+        start.countDown();
+        done.await(3, TimeUnit.SECONDS);
+        pool.shutdownNow();
+
+        System.out.println("Unique instances seen: " + identities.size());
+        System.out.println("Identities: " + identities);
+    }
+}
