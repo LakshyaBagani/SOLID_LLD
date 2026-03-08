@@ -1,55 +1,73 @@
 package com.example.tickets;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * INTENTION: A ticket should be an immutable record-like object.
+ *
+ * CURRENT STATE (BROKEN ON PURPOSE):
+ * - mutable fields
+ * - multiple constructors
+ * - public setters
+ * - tags list can be modified from outside
+ * - validation is scattered elsewhere
+ *
+ * TODO (student): refactor to immutable + Builder.
+ */
 public class IncidentTicket {
 
-    private final String id;
-    private final String reporterEmail;
-    private final String title;
-    private final String description;
-    private final String priority;
-    private final List<String> tags;
-    private final String assigneeEmail;
-    private final boolean customerVisible;
-    private final Integer slaMinutes;
-    private final String source;
+    private String id;
+    private String reporterEmail;
+    private String title;
 
-    private IncidentTicket(Builder b) {
-        this.id = b.id;
-        this.reporterEmail = b.reporterEmail;
-        this.title = b.title;
-        this.description = b.description;
-        this.priority = b.priority;
-        this.tags = Collections.unmodifiableList(new ArrayList<>(b.tags));
-        this.assigneeEmail = b.assigneeEmail;
-        this.customerVisible = b.customerVisible;
-        this.slaMinutes = b.slaMinutes;
-        this.source = b.source;
+    private String description;
+    private String priority;       // LOW, MEDIUM, HIGH, CRITICAL
+    private List<String> tags;     // mutable leak
+    private String assigneeEmail;
+    private boolean customerVisible;
+    private Integer slaMinutes;    // optional
+    private String source;         // e.g. "CLI", "WEBHOOK", "EMAIL"
+
+    public IncidentTicket() {
+        this.tags = new ArrayList<>();
     }
 
+    public IncidentTicket(String id, String reporterEmail, String title) {
+        this();
+        this.id = id;
+        this.reporterEmail = reporterEmail;
+        this.title = title;
+    }
+
+    public IncidentTicket(String id, String reporterEmail, String title, String priority) {
+        this(id, reporterEmail, title);
+        this.priority = priority;
+    }
+
+    // Getters
     public String getId() { return id; }
     public String getReporterEmail() { return reporterEmail; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public String getPriority() { return priority; }
-    public List<String> getTags() { return tags; }
+    public List<String> getTags() { return tags; } // BROKEN: leaks internal list
     public String getAssigneeEmail() { return assigneeEmail; }
     public boolean isCustomerVisible() { return customerVisible; }
     public Integer getSlaMinutes() { return slaMinutes; }
     public String getSource() { return source; }
 
-    public Builder toBuilder() {
-        Builder b = new Builder(id, reporterEmail, title);
-        b.description = description;
-        b.priority = priority;
-        b.tags = new ArrayList<>(tags);
-        b.assigneeEmail = assigneeEmail;
-        b.customerVisible = customerVisible;
-        b.slaMinutes = slaMinutes;
-        b.source = source;
-        return b;
-    }
+    // Setters (BROKEN: should not exist after refactor)
+    public void setId(String id) { this.id = id; }
+    public void setReporterEmail(String reporterEmail) { this.reporterEmail = reporterEmail; }
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setPriority(String priority) { this.priority = priority; }
+    public void setTags(List<String> tags) { this.tags = tags; } // BROKEN: retains external reference
+    public void setAssigneeEmail(String assigneeEmail) { this.assigneeEmail = assigneeEmail; }
+    public void setCustomerVisible(boolean customerVisible) { this.customerVisible = customerVisible; }
+    public void setSlaMinutes(Integer slaMinutes) { this.slaMinutes = slaMinutes; }
+    public void setSource(String source) { this.source = source; }
 
     @Override
     public String toString() {
@@ -65,43 +83,5 @@ public class IncidentTicket {
                 ", slaMinutes=" + slaMinutes +
                 ", source='" + source + '\'' +
                 '}';
-    }
-
-    public static class Builder {
-        private final String id;
-        private final String reporterEmail;
-        private final String title;
-
-        String description;
-        String priority;
-        List<String> tags = new ArrayList<>();
-        String assigneeEmail;
-        boolean customerVisible;
-        Integer slaMinutes;
-        String source;
-
-        public Builder(String id, String reporterEmail, String title) {
-            this.id = id; this.reporterEmail = reporterEmail; this.title = title;
-        }
-
-        public Builder description(String d) { this.description = d; return this; }
-        public Builder priority(String p) { this.priority = p; return this; }
-        public Builder tags(List<String> t) { this.tags = new ArrayList<>(t); return this; }
-        public Builder addTag(String t) { this.tags.add(t); return this; }
-        public Builder assigneeEmail(String e) { this.assigneeEmail = e; return this; }
-        public Builder customerVisible(boolean v) { this.customerVisible = v; return this; }
-        public Builder slaMinutes(Integer m) { this.slaMinutes = m; return this; }
-        public Builder source(String s) { this.source = s; return this; }
-
-        public IncidentTicket build() {
-            Validation.requireTicketId(id);
-            Validation.requireEmail(reporterEmail, "reporterEmail");
-            Validation.requireNonBlank(title, "title");
-            Validation.requireMaxLen(title, 80, "title");
-            Validation.requireOneOf(priority, "priority", "LOW", "MEDIUM", "HIGH", "CRITICAL");
-            if (assigneeEmail != null) Validation.requireEmail(assigneeEmail, "assigneeEmail");
-            Validation.requireRange(slaMinutes, 5, 7200, "slaMinutes");
-            return new IncidentTicket(this);
-        }
     }
 }

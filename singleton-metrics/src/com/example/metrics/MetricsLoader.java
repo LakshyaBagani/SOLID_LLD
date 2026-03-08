@@ -1,8 +1,18 @@
 package com.example.metrics;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
+/**
+ * Loads default metric keys from a properties file.
+ *
+ * CURRENT STATE (BROKEN ON PURPOSE):
+ * - Uses 'new MetricsRegistry()' instead of the singleton.
+ *
+ * TODO (student):
+ *  - Use MetricsRegistry.getInstance() and remove all direct instantiation.
+ */
 public class MetricsLoader {
 
     public MetricsRegistry loadFromFile(String path) throws IOException {
@@ -11,7 +21,8 @@ public class MetricsLoader {
             props.load(fis);
         }
 
-        MetricsRegistry registry = MetricsRegistry.getInstance();
+        // BROKEN: should not create a new instance
+        MetricsRegistry registry = new MetricsRegistry();
 
         for (String key : props.stringPropertyNames()) {
             String raw = props.getProperty(key, "0").trim();

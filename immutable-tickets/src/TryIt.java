@@ -1,29 +1,34 @@
 import com.example.tickets.IncidentTicket;
 import com.example.tickets.TicketService;
 
-import java.util.*;
+import java.util.List;
 
+/**
+ * Starter demo that shows why mutability is risky.
+ *
+ * After refactor:
+ * - direct mutation should not compile (no setters)
+ * - external modifications to tags should not affect the ticket
+ * - service "updates" should return a NEW ticket instance
+ */
 public class TryIt {
 
     public static void main(String[] args) {
-        TicketService svc = new TicketService();
+        TicketService service = new TicketService();
 
-        IncidentTicket t = svc.createTicket("TCK-1001", "reporter@example.com", "Payment failing on checkout");
+        IncidentTicket t = service.createTicket("TCK-1001", "reporter@example.com", "Payment failing on checkout");
         System.out.println("Created: " + t);
 
-        // updates return new instances
-        IncidentTicket t2 = svc.assign(t, "agent@example.com");
-        IncidentTicket t3 = svc.escalateToCritical(t2);
-        System.out.println("\nAfter updates (new instance): " + t3);
-        System.out.println("Original unchanged: " + t);
+        // Demonstrate post-creation mutation through service
+        service.assign(t, "agent@example.com");
+        service.escalateToCritical(t);
+        System.out.println("\nAfter service mutations: " + t);
 
-        // tags list is not mutable from outside
-        List<String> tags = t3.getTags();
-        try {
-            tags.add("HACKED_FROM_OUTSIDE");
-            System.out.println("\nBUG: tags were mutable!");
-        } catch (UnsupportedOperationException e) {
-            System.out.println("\nExternal tag mutation blocked (immutable)");
-        }
+        // Demonstrate external mutation via leaked list reference
+        List<String> tags = t.getTags();
+        tags.add("HACKED_FROM_OUTSIDE");
+        System.out.println("\nAfter external tag mutation: " + t);
+
+        // Starter compiles; after refactor, you should redesign updates to create new objects instead.
     }
 }
