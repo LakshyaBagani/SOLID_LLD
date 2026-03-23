@@ -1,5 +1,3 @@
-package com.example.pen;
-
 public class ClickStrategy implements OpenCloseStrategy {
 
     @Override

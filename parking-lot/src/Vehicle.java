@@ -1,5 +1,3 @@
-package com.example.parking;
-
 public class Vehicle {
     private final String licensePlate;
     private final VehicleType type;

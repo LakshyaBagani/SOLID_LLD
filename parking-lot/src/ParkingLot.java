@@ -1,5 +1,3 @@
-package com.example.parking;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +9,7 @@ public class ParkingLot {
     private final List<ParkingSlot> slots;
     private final SlotAssignmentStrategy assignmentStrategy;
     private final BillingService billingService;
-    private final Map<String, ParkingTicket> activeTickets; // ticketId -> ticket
+    private final Map<String, ParkingTicket> activeTickets;
     private int ticketCounter;
 
     public ParkingLot(List<ParkingSlot> slots, SlotAssignmentStrategy assignmentStrategy, BillingService billingService) {

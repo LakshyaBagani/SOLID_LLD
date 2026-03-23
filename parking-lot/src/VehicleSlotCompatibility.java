@@ -1,5 +1,3 @@
-package com.example.parking;
-
 import java.util.List;
 
 public class VehicleSlotCompatibility {

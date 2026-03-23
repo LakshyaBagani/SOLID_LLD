@@ -1,5 +1,3 @@
-package com.example.parking;
-
 import java.time.LocalDateTime;
 
 public class ParkingTicket {

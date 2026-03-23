@@ -1,5 +1,3 @@
-package com.example.parking;
-
 import java.util.Map;
 
 public class DefaultPricingPolicy implements PricingPolicy {

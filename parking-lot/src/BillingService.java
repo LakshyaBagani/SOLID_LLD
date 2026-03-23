@@ -1,5 +1,3 @@
-package com.example.parking;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -12,7 +10,7 @@ public class BillingService {
 
     public Bill generateBill(ParkingTicket ticket, LocalDateTime exitTime) {
         long minutes = Duration.between(ticket.getEntryTime(), exitTime).toMinutes();
-        long hours = (minutes + 59) / 60; // round up to next hour
+        long hours = (minutes + 59) / 60;
         if (hours == 0) hours = 1;
 
         int rate = pricingPolicy.ratePerHour(ticket.getSlot().getType());

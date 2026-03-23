@@ -1,5 +1,3 @@
-package com.example.parking;
-
 public class ParkingSlot {
     private final int slotNumber;
     private final SlotType type;

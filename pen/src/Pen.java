@@ -1,5 +1,3 @@
-package com.example.pen;
-
 public class Pen {
     private final OpenCloseStrategy openClose;
     private Refill refill;

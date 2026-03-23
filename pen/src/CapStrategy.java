@@ -1,5 +1,3 @@
-package com.example.pen;
-
 public class CapStrategy implements OpenCloseStrategy {
 
     @Override

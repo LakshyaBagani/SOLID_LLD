@@ -1,5 +1,3 @@
-package com.example.parking;
-
 public class Gate {
     private final int gateNumber;
     private final int floor;
